@@ -86,10 +86,14 @@ for select to authenticated using (
 create policy "reports: provincial and system admins read all" on public.reports
 for select to authenticated using (public.current_role() in ('provincial_admin','system_admin'));
 
-create policy "reports: collectors insert own" on public.reports
-for insert to authenticated with check (collector_id = auth.uid());
-create policy "reports: collectors update own" on public.reports
-for update to authenticated using (collector_id = auth.uid()) with check (collector_id = auth.uid());
+create policy "reports: collectors insert own district" on public.reports
+for insert to authenticated with check (
+  collector_id = auth.uid() and district = public.current_district()
+);
+create policy "reports: collectors update own district" on public.reports
+for update to authenticated using (collector_id = auth.uid()) with check (
+  collector_id = auth.uid() and district = public.current_district()
+);
 create policy "reports: district admins manage district" on public.reports
 for all to authenticated using (
   public.current_role() = 'district_admin' and district = public.current_district()
