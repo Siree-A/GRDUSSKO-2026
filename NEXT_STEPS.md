@@ -1,5 +1,15 @@
 # ส่งต่องาน: เปิดใช้ Supabase สำหรับระบบรายงาน
 
+## สถานะล่าสุด: แก้ Project URL แล้ว
+
+- ผู้ดูแลแจ้ง URL จริง `https://tcnshfmfjbswnbtjupbl.supabase.co/rest/v1/` แล้ว
+- ตั้ง `supabase-config.js` เป็น `https://tcnshfmfjbswnbtjupbl.supabase.co` (ไม่ใส่ `/rest/v1/`)
+- ตรวจ Auth health แล้วตอบ HTTP 200 โดยใช้ Publishable key ที่มีอยู่
+- การล็อกอินบัญชี `district-01@grdussko.local` และ `admin@grdussko.local` ด้วยรหัสเริ่มต้นยังไม่สำเร็จ ยังต้องเข้าหน้าจัดการ Supabase หรือรันตัวสร้างบัญชีด้วยสิทธิ์ผู้ดูแลก่อนยืนยันว่าผู้กรอกกับแอดมินเห็นข้อมูลเดียวกันได้
+- งานโค้ดค้างก่อนหน้านี้เผยแพร่ขึ้น GitHub ครบแล้วถึง `71e9f0c`
+
+ผลตรวจด้านล่างเป็นประวัติก่อนแก้ URL ให้ใช้สถานะล่าสุดในส่วนนี้แทน
+
 ## ตรวจพบเมื่อกลับมาทำงานที่เครื่องเดิม 9 ตุลาคม 2569
 
 - `supabase-config.js` มี key รูปแบบ Publishable แต่ช่อง `url` เป็น URL เว็บไซต์ GitHub Pages จึงยังใช้เชื่อม Supabase ไม่ได้ ต้องแทนด้วย Project URL ของ Supabase จริงที่ลงท้าย `.supabase.co`
