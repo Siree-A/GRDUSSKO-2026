@@ -14,13 +14,15 @@ Write-Host ('Target Supabase project: ' + $taskUrl)
 Write-Host 'Creates missing district accounts and assigns collector/district profiles. Existing passwords are preserved.'
 Write-Host 'Creates a provincial admin account if absent. Enter the server secret key locally; it will not be saved.'
 $taskSecureKey = Read-Host 'Supabase secret key or legacy service_role key' -AsSecureString
-$taskSecret = [Net.NetworkCredential]::new('', $taskSecureKey).Password
+$taskSecret = [Net.NetworkCredential]::new('', $taskSecureKey).Password.Trim()
 $taskHeaders = @{ apikey = $taskSecret }
 if ($taskSecret -notlike 'sb_secret_*') { $taskHeaders.Authorization = 'Bearer ' + $taskSecret }
 function Invoke-ProjectApi {
     param([string]$Path, [string]$Method = 'Get', $Body = $null, [hashtable]$ExtraHeaders = @{})
     $taskRequestHeaders = @{} + $taskHeaders + $ExtraHeaders
-    $taskRequest = @{Uri = $taskUrl + $Path; Method = $Method; Headers = $taskRequestHeaders; TimeoutSec = 30}
+    # Windows PowerShell's default User-Agent starts with Mozilla, which Supabase
+    # classifies as a browser. Identify this private local administration script.
+    $taskRequest = @{Uri = $taskUrl + $Path; Method = $Method; Headers = $taskRequestHeaders; TimeoutSec = 30; UserAgent = 'GRDUSSKO-Provisioning/1.0 (PowerShell; local-admin)'}
     if ($null -ne $Body) {
         $taskRequest.ContentType = 'application/json; charset=utf-8'
         $taskRequest.Body = [Text.Encoding]::UTF8.GetBytes(($Body | ConvertTo-Json -Depth 12 -Compress))
