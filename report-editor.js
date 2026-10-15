@@ -247,7 +247,7 @@
         _collectorId:original?._collectorId||currentProfile?.id,formState:snapshot(form)};
       form.inert=true;
       const i=db[type].findIndex(x=>x.id===record.id);if(i<0)db[type].push(record);else db[type][i]=record;
-      save();const sent=await syncCloudRecord(type,record);clearDraft(form);editing.set(type,structuredClone(record));editBanner(type,record);renderHistory();
+      save();const sent=await syncCloudRecord(type,record);if(sent)loadProvinceSummary();clearDraft(form);editing.set(type,structuredClone(record));editBanner(type,record);renderHistory();
       const status=$('#'+(type==='surveys'?'survey':type==='rankings'?'ranking':type==='measures'?'measures':'adr')+'Status');status.textContent=cloudSaveMessage(record);
       if(type==='surveys')showSurveyResult(record);else showReportResult(type,record);
       toast(sent||!supabaseClient?(original?'บันทึกการแก้ไขแล้ว':'บันทึกรายงานแล้ว'):'เก็บการแก้ไขในเครื่องแล้ว ยังส่งฐานกลางไม่สำเร็จ ระบบจะลองใหม่');

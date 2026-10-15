@@ -7,13 +7,12 @@
 1. สร้าง Supabase project ของจังหวัด และเปิด `SQL Editor`
 2. วางเนื้อหาทั้งหมดจาก [schema.sql](supabase/schema.sql) แล้วกด Run
 3. ที่ `Authentication > Providers` เปิด Email/Password และสร้างบัญชีให้ผู้ใช้งานแต่ละคน
-4. ที่ `Table Editor > profiles` กำหนด `role` และ `district` ตามสิทธิ์:
-   - `collector` — เห็นและแก้ไขเฉพาะรายงานตนเอง
-   - `district_admin` — เห็นและจัดการทุกคนในอำเภอที่กำหนด
-   - `provincial_admin` — เห็นและจัดการทั้งจังหวัด
-   - `system_admin` — จัดการทั้งระบบ
+4. ที่ `Table Editor > profiles` กำหนด 22 บัญชีอำเภอเป็น `collector` และใส่ `district` ให้ตรงชื่ออำเภอ ส่วน `admin@grdussko.local` ให้เป็น `provincial_admin` และ `district` ว่าง บัญชีอื่นจะไม่เป็นผู้ดูแล
 5. คัดลอก Project URL และ Publishable/Anon key จาก `Project Settings > API` มาใส่ใน [supabase-config.js](supabase-config.js)
 6. Push ไฟล์ `supabase-config.js` ที่เติมค่าแล้วขึ้น GitHub Pages
+7. สำหรับการเข้าสู่ระบบครั้งเดียวและ Dashboard รวมจังหวัด ให้เปิด `SQL Editor` อีกครั้ง วางเนื้อหาทั้งหมดจาก [province-dashboard.sql](supabase/province-dashboard.sql) แล้วกด Run (รันซ้ำได้) ไฟล์นี้จำกัดสิทธิ์จัดการทั้งจังหวัดไว้ที่บัญชี `admin@grdussko.local` และเปิดเฉพาะยอดสรุปที่ไม่ระบุชื่อร้าน/ผู้ป่วยให้ผู้รายงานทั้ง 22 อำเภออ่าน
+
+หลังจากรันข้อ 7 ให้เปิดเว็บไซต์ใหม่ ล็อกอินด้วยชื่ออำเภอ แล้วตรวจว่า Dashboard แสดงยอดรวมจังหวัดและไม่มีเมนูผู้ดูแล จากนั้นล็อกอินด้วย “แอดมิน” เพื่อตรวจว่าหน้าผู้ดูแลแสดงรายงานทุกอำเภอ การออกจากระบบใช้ปุ่มด้านบนเพียงจุดเดียว
 
 ## ย้ายข้อมูล 9 แห่งเดิม
 
