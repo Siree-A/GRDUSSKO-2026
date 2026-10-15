@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict');
+const {surveyTables,workbook}=require('../report-analysis.js');
+const record={id:'r1',district:'เมืองศรีสะเกษ',store:'ทดสอบ <&>',date:'2026-10-15',found:[{code:'D-101',points:3,count:4,items:['ยา A','ยา B','ยา C','ยา D']},{code:'D-613',points:5,count:3}],causes:['D-101–106|S1']};
+const tables=surveyTables([record]);assert.equal(tables[0].rows[0].problem_score,12);assert.equal(tables[1].rows.length,4);assert.equal(tables[2].rows[0].cause_code,'S1');
+assert.ok(tables.every(t=>t.rows.every(r=>r.report_id==='r1')));
+const legacy=surveyTables([{id:'old',found:[{code:'D-101',points:3,count:4,item:'A, B / C'}]}]);
+assert.equal(legacy[1].rows.length,1);assert.equal(legacy[1].rows[0].legacy_reported_count,4);assert.equal(legacy[1].rows[0].medicine_name,'');
+const xml=workbook(tables);assert.ok(xml.includes('ss:Type="Number">12'));assert.ok(xml.includes('ทดสอบ &lt;&amp;&gt;'));assert.ok(!xml.includes('NaN'));
+assert.ok(workbook([{name:'test',rows:[{text:'=HYPERLINK("bad")'}]}]).includes('ss:Type="String">=HYPERLINK'));
+console.log('PASS: normalized item rows, stable joins, literacy exclusion, legacy preservation, numeric cells and XML escaping');

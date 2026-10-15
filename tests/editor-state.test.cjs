@@ -1,0 +1,18 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync(require('node:path').join(__dirname,'..','report-editor.js'),'utf8');
+new vm.Script(source);
+const policy=source.slice(source.indexOf('  const canEdit ='),source.indexOf('  const controls ='));
+const names=source.slice(source.indexOf('  function itemNames('),source.indexOf('  function drugInputs('));
+const c=vm.createContext({supabaseClient:{},currentProfile:{id:'a',role:'collector',district:'เมืองศรีสะเกษ'}});
+vm.runInContext(policy+names+';globalThis.allowed=canEdit;',c);
+assert.equal(c.allowed({_collectorId:'a'}),true);
+assert.equal(c.allowed({_collectorId:'b',district:'เมืองศรีสะเกษ'}),false);
+assert.equal(c.allowed({district:'เมืองศรีสะเกษ'}),false,'district is not evidence of ownership');
+c.currentProfile={id:'admin',role:'provincial_admin'};assert.equal(c.allowed({_collectorId:'a'}),true);
+c.currentProfile=null;assert.equal(c.allowed({_collectorId:'a'}),false);
+assert.deepEqual(Array.from(c.itemNames({count:4,item:'A, B / C'})),['A, B / C','','','']);
+assert.deepEqual(Array.from(c.itemNames({count:2,items:['A','B']})),['A','B']);
+assert.ok(source.includes('id:original?.id||crypto.randomUUID()'));
+assert.ok(source.includes('created:original?.created||stamp'));
+assert.ok(source.includes("'sisaketReportDraftV3:'+(currentProfile?.id||'local')"));
+console.log('PASS: ownership policy, missing-owner denial, legacy restoration, stable edit ID and account-scoped drafts');

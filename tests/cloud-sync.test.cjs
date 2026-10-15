@@ -49,5 +49,18 @@ function setup() {
   await c.loadCloudReports();
   assert.equal(pages, 2);
   assert.equal(c.db.surveys.length, 1001, 'read all pages of provincial reports');
+  c.pendingReports=[{owner:'collector-a',type:'surveys',record:{id:'same',store:'edited',updated:'new'}}];
+  c.supabaseClient.from=()=>({select:()=>({order(){return this},range:async()=>({data:[{report_type:'surveys',local_id:'same',collector_id:'collector-a',payload:{id:'same',store:'old'},updated_at:'old'}],error:null})})});
+  await c.loadCloudReports();
+  assert.equal(c.db.surveys[0].store,'edited','queued edit wins over stale cloud version');
+  c.pendingReports=[];await c.loadCloudReports();
+  assert.equal(c.db.surveys[0]._collectorId,'collector-a','ownership comes from the row, not payload');
+  assert.equal(await c.syncCloudRecord('surveys',{id:'other',_collectorId:'collector-b'}),false,'collector cannot edit another owner');
+  assert.equal(c.pendingReports.length,0,'unauthorized changes are not queued');
+  c.currentProfile={id:'admin',role:'provincial_admin'};
+  let written;
+  c.supabaseClient.from=()=>({upsert:row=>{written=row;return {select:async()=>({data:[{local_id:row.local_id}],error:null})}}});
+  await c.syncCloudRecord('surveys',{id:'same',_collectorId:'collector-a',district:'เมืองศรีสะเกษ'});
+  assert.equal(written.collector_id,'collector-a','admin editing preserves original ownership');
   console.log('PASS: script syntax, durable retry, account isolation, refresh preservation, pagination');
 })().catch(error => {console.error(error); process.exitCode = 1});
